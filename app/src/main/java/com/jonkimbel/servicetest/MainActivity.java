@@ -1,16 +1,18 @@
 package com.jonkimbel.servicetest;
 
 import android.os.Bundle;
-import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
-import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.google.android.material.snackbar.Snackbar;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.widget.TextView;
 
-import com.google.common.base.Optional;
+import com.google.common.collect.ImmutableList;
 
 import java.util.Map;
 import java.util.WeakHashMap;
@@ -22,11 +24,7 @@ public final class MainActivity extends AppCompatActivity {
      * Keeps track of objects that need to save their state when the activity dies. The values are
      * not used, we only use a WeakHashMap for its weak properties.
      */
-    private Map<HasStateToSave, Boolean> statefulObjects = new WeakHashMap<>();
-
-    // Non-null after onCreate().
-    private Timer timer;
-    private ResultSaver resultSaver;
+    private Map<HasState, Boolean> statefulObjects = new WeakHashMap<>();
 
     private boolean started;
 
@@ -35,23 +33,26 @@ public final class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         // Draw layout.
         setContentView(R.layout.activity_main);
-        setSupportActionBar((Toolbar) findViewById(R.id.toolbar));
 
-        // Instantiate fields.
-        timer = Timer.newInstance((TextView) findViewById(R.id.timer_text), savedInstanceState, statefulObjects);
-        resultSaver = new ResultSaver(getApplicationContext());
+        // Create behaviors to populate the recycler view with.
+        ImmutableList.Builder<ActionCardViewModel> viewModels = new ImmutableList.Builder<>();
+        viewModels.add(SaveToDisk.newInstance(getApplicationContext(), statefulObjects, savedInstanceState));
 
-        // Set listeners.
-        ((FloatingActionButton) findViewById(R.id.fab)).setOnClickListener(v -> onButtonClick());
+        // Set up recycler view.
+        RecyclerView recyclerView = (RecyclerView) findViewById(R.id.my_recycler_view);
+        recyclerView.setLayoutManager(new LinearLayoutManager(this));
+        recyclerView.setAdapter(new ActionCardListAdapter(viewModels.build()));
+
+        // Improves recycler view performance, changes in content do not change the layout size.
+        recyclerView.setHasFixedSize(true);
     }
 
     @Override
     protected void onStart() {
         super.onStart();
         started = true;
-        Optional<Integer> result = resultSaver.load();
-        if (result.isPresent()) {
-            processResult(result.get());
+        for (HasState hasState : statefulObjects.keySet()) {
+            hasState.onStart();
         }
     }
 
@@ -64,47 +65,8 @@ public final class MainActivity extends AppCompatActivity {
     @Override
     protected void onSaveInstanceState(Bundle bundle) {
         super.onSaveInstanceState(bundle);
-        for (HasStateToSave hasStateToSave : statefulObjects.keySet()) {
-            hasStateToSave.onSaveInstanceState(bundle);
+        for (HasState hasState : statefulObjects.keySet()) {
+            hasState.onSaveInstanceState(bundle);
         }
-    }
-
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.menu_main, menu);
-        return true;
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
-
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            return true;
-        }
-
-        return super.onOptionsItemSelected(item);
-    }
-
-    private void onButtonClick() {
-        timer.start();
-        new SlowOperation(result -> {
-            if (started) {
-                processResult(result);
-            } else {
-                resultSaver.save(result);
-            }
-        }).start();
-    }
-
-    private void processResult(int result) {
-        Log.d(TAG, "REKT Operation completed, result = " + result);
-        Snackbar.make((FloatingActionButton) findViewById(R.id.fab), "Operation completed, result = " + result, Snackbar.LENGTH_LONG).show();
-        timer.stop();
     }
 }
