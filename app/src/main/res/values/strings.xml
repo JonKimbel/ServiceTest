@@ -1,4 +1,8 @@
 <resources>
     <string name="app_name">ServiceTest</string>
     <string name="action_settings">Settings</string>
+    <string name="placeholder">Hewwo</string>
+    <string name="waitingIconContentDescription">Waiting icon</string>
+    <string name="checkMarkContentDescription">Check mark</string>
+    <string name="startButtonText">Start</string>
 </resources>

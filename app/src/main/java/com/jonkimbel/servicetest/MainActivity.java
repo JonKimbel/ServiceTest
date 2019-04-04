@@ -1,21 +1,20 @@
 package com.jonkimbel.servicetest;
 
 import android.os.Bundle;
-import com.google.android.material.floatingactionbutton.FloatingActionButton;
-import com.google.android.material.snackbar.Snackbar;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.widget.Toolbar;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
-
-import android.util.Log;
-import android.view.Menu;
-import android.view.MenuItem;
 
 import com.google.common.collect.ImmutableList;
+import com.jonkimbel.servicetest.api.ActionCardViewModel;
+import com.jonkimbel.servicetest.api.HasState;
+import com.jonkimbel.servicetest.savetodisk.SaveToDisk;
+import com.jonkimbel.servicetest.view.ActionCardListAdapter;
 
 import java.util.Map;
 import java.util.WeakHashMap;
+
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 public final class MainActivity extends AppCompatActivity {
     private final static String TAG = "MainActivity";
@@ -39,7 +38,7 @@ public final class MainActivity extends AppCompatActivity {
         viewModels.add(SaveToDisk.newInstance(getApplicationContext(), statefulObjects, savedInstanceState));
 
         // Set up recycler view.
-        RecyclerView recyclerView = (RecyclerView) findViewById(R.id.my_recycler_view);
+        RecyclerView recyclerView = findViewById(R.id.my_recycler_view);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
         recyclerView.setAdapter(new ActionCardListAdapter(viewModels.build()));
 
@@ -59,11 +58,14 @@ public final class MainActivity extends AppCompatActivity {
     @Override
     protected void onStop() {
         started = false;
+        for (HasState hasState : statefulObjects.keySet()) {
+            hasState.onStop();
+        }
         super.onStop();
     }
 
     @Override
-    protected void onSaveInstanceState(Bundle bundle) {
+    protected void onSaveInstanceState(@NonNull Bundle bundle) {
         super.onSaveInstanceState(bundle);
         for (HasState hasState : statefulObjects.keySet()) {
             hasState.onSaveInstanceState(bundle);

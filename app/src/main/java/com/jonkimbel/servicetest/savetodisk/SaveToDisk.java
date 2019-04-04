@@ -1,30 +1,39 @@
-package com.jonkimbel.servicetest;
+package com.jonkimbel.servicetest.savetodisk;
 
 import android.content.Context;
 import android.os.Bundle;
-import android.util.Log;
 
 import com.google.common.base.Optional;
+import com.jonkimbel.servicetest.api.ActionCardViewModel;
+import com.jonkimbel.servicetest.api.HasState;
+import com.jonkimbel.servicetest.SlowOperation;
 
 import java.util.Map;
 
 public class SaveToDisk implements ActionCardViewModel, HasState {
     private static final String TAG = "SaveToDisk";
+    private static final String checkMarkVisibleKey = TAG + "checkMarkVisible";
+    private static final String waitingIconVisibleKey = TAG + "waitingIconVisible";
 
-    private Timer timer;
     private ResultSaver resultSaver;
-    private String timerText = "";
+    private Runnable dataChangedCallback = () -> { };
     private boolean activityStarted;
+
+    // Persisted when Activity stops.
     private boolean checkMarkVisible;
+    private boolean waitingIconVisible;
 
     private SaveToDisk(Context applicationContext, Map<HasState, Boolean> statefulObjects, Bundle savedInstanceState) {
-        timer = Timer.newInstance(TAG, text -> timerText = text, savedInstanceState, statefulObjects);
         resultSaver = new ResultSaver(applicationContext);
     }
 
     public static SaveToDisk newInstance(Context applicationContext, Map<HasState, Boolean> statefulObjects, Bundle savedInstanceState) {
         SaveToDisk viewModel = new SaveToDisk(applicationContext, statefulObjects, savedInstanceState);
         statefulObjects.put(viewModel, true);
+        if (savedInstanceState != null) {
+            viewModel.checkMarkVisible = savedInstanceState.getBoolean(checkMarkVisibleKey, false);
+            viewModel.waitingIconVisible = savedInstanceState.getBoolean(waitingIconVisibleKey, false);
+        }
         return viewModel;
     }
 
@@ -36,13 +45,8 @@ public class SaveToDisk implements ActionCardViewModel, HasState {
     @Override
     public String getDescriptionText() {
         return "This approach will run the callback if the activity is running, " +
-                "but if it's not running it will save the result to disk so the activity can " +
-                "read it in onStart().";
-    }
-
-    @Override
-    public String getTimerText() {
-        return timerText;
+                "but if it's not running it will save the result to disk (not the bundle!) so " +
+                "the activity can read it in onStart().";
     }
 
     @Override
@@ -52,7 +56,6 @@ public class SaveToDisk implements ActionCardViewModel, HasState {
 
     @Override
     public void onClick() {
-        timer.start();
         new SlowOperation(result -> {
             if (activityStarted) {
                 processResult(result);
@@ -60,6 +63,19 @@ public class SaveToDisk implements ActionCardViewModel, HasState {
                 resultSaver.save(result);
             }
         }).start();
+        checkMarkVisible = false;
+        waitingIconVisible = true;
+        dataChangedCallback.run();
+    }
+
+    @Override
+    public void setDataChangedCallback(Runnable callback) {
+        dataChangedCallback = callback;
+    }
+
+    @Override
+    public boolean getWaitingIconViewVisibility() {
+        return waitingIconVisible;
     }
 
     @Override
@@ -73,7 +89,8 @@ public class SaveToDisk implements ActionCardViewModel, HasState {
 
     @Override
     public void onSaveInstanceState(Bundle bundle) {
-
+        bundle.putBoolean(checkMarkVisibleKey, checkMarkVisible);
+        bundle.putBoolean(waitingIconVisibleKey, waitingIconVisible);
     }
 
     @Override
@@ -82,8 +99,8 @@ public class SaveToDisk implements ActionCardViewModel, HasState {
     }
 
     private void processResult(int result) {
-        Log.d(TAG, "REKT Operation completed, result = " + result);
         checkMarkVisible = true;
-        timer.stop();
+        waitingIconVisible = false;
+        dataChangedCallback.run();
     }
 }

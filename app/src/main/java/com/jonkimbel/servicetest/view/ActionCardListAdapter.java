@@ -1,18 +1,18 @@
-package com.jonkimbel.servicetest;
+package com.jonkimbel.servicetest.view;
 
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.google.android.material.card.MaterialCardView;
+import com.jonkimbel.servicetest.R;
+import com.jonkimbel.servicetest.api.ActionCardViewModel;
 
 import java.util.List;
 
+import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
-
-import static com.google.common.base.Preconditions.checkNotNull;
 
 public class ActionCardListAdapter extends RecyclerView.Adapter<ActionCardListAdapter.ActionCardViewHolder> {
     private List<ActionCardViewModel> viewModels;
@@ -22,21 +22,24 @@ public class ActionCardListAdapter extends RecyclerView.Adapter<ActionCardListAd
     }
 
     @Override
-    public ActionCardViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+    @NonNull
+    public ActionCardViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         MaterialCardView cardView = (MaterialCardView) LayoutInflater.from(parent.getContext())
                 .inflate(R.layout.collapsible_card_with_button, parent, false);
         return new ActionCardViewHolder(cardView);
     }
 
     @Override
-    public void onBindViewHolder(ActionCardViewHolder view, int position) {
+    public void onBindViewHolder(@NonNull ActionCardViewHolder view, int position) {
         ActionCardViewModel viewModel = viewModels.get(position);
 
         view.setTitleText(viewModel.getTitleText());
         view.setDescriptionText(viewModel.getDescriptionText());
-        view.setTimerText(viewModel.getTimerText());
         view.setOnClick(v -> viewModel.onClick());
         view.setCheckMarkViewVisibility(viewModel.getCheckMarkViewVisibility());
+        view.setWaitingIconViewVisibility(viewModel.getWaitingIconViewVisibility());
+
+        viewModel.setDataChangedCallback(() -> notifyItemChanged(position));
     }
 
     @Override
@@ -44,43 +47,42 @@ public class ActionCardListAdapter extends RecyclerView.Adapter<ActionCardListAd
         return viewModels.size();
     }
 
-    public static class ActionCardViewHolder extends RecyclerView.ViewHolder {
+    static class ActionCardViewHolder extends RecyclerView.ViewHolder {
         private TextView titleView;
         private TextView timerView;
         private TextView descriptionView;
         private View buttonView;
         private View checkMarkView;
+        private View waitingIconView;
 
-        public ActionCardViewHolder(MaterialCardView cardView) {
+        ActionCardViewHolder(MaterialCardView cardView) {
             super(cardView);
 
-            Log.d("ActionCardListAdapter", "childCount:" + cardView.getChildCount());
-
-            titleView = (TextView) cardView.findViewById(R.id.title_text);
-            timerView = (TextView) cardView.findViewById(R.id.timer_text);
-            descriptionView = (TextView) cardView.findViewById(R.id.description_text);
-            buttonView =  cardView.findViewById(R.id.button);
-            checkMarkView =  cardView.findViewById(R.id.check_mark);
+            titleView = cardView.findViewById(R.id.title_text);
+            descriptionView = cardView.findViewById(R.id.description_text);
+            buttonView = cardView.findViewById(R.id.button);
+            checkMarkView = cardView.findViewById(R.id.check_mark);
+            waitingIconView = cardView.findViewById(R.id.waiting_icon);
         }
 
-        public void setTitleText(String text) {
+        void setTitleText(String text) {
             titleView.setText(text);
         }
 
-        public void setTimerText(String text) {
-            timerView.setText(text);
-        }
-
-        public void setDescriptionText(String text) {
+        void setDescriptionText(String text) {
             descriptionView.setText(text);
         }
 
-        public void setOnClick(View.OnClickListener listener) {
+        void setOnClick(View.OnClickListener listener) {
             buttonView.setOnClickListener(listener);
         }
 
-        public void setCheckMarkViewVisibility(boolean visible) {
+        void setCheckMarkViewVisibility(boolean visible) {
             checkMarkView.setVisibility(visible ? View.VISIBLE : View.INVISIBLE);
+        }
+
+        void setWaitingIconViewVisibility(boolean visible) {
+            waitingIconView.setVisibility(visible ? View.VISIBLE : View.INVISIBLE);
         }
     }
 }

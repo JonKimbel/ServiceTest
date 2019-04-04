@@ -1,9 +1,15 @@
-package com.jonkimbel.servicetest;
+package com.jonkimbel.servicetest.api;
 
 public interface ActionCardViewModel {
     String getTitleText();
+
     String getDescriptionText();
-    String getTimerText();
+
     boolean getCheckMarkViewVisibility();
+
     void onClick();
+
+    void setDataChangedCallback(Runnable callback);
+
+    boolean getWaitingIconViewVisibility();
 }

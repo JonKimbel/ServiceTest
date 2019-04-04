@@ -1,4 +1,4 @@
-package com.jonkimbel.servicetest;
+package com.jonkimbel.servicetest.savetodisk;
 
 import android.content.Context;
 import android.util.Log;
@@ -12,15 +12,15 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 
-public class ResultSaver {
+class ResultSaver {
     private final static String TAG = "ResultSaver";
     private final Context applicationContext;
 
-    public ResultSaver(Context applicationContext) {
+    ResultSaver(Context applicationContext) {
         this.applicationContext = applicationContext;
     }
 
-    public void save(int result) {
+    void save(int result) {
         Log.d(TAG, "REKT Saving result = " + result);
         try {
             OutputStreamWriter outputStreamWriter = new OutputStreamWriter(applicationContext.openFileOutput("result", Context.MODE_PRIVATE));
@@ -31,7 +31,7 @@ public class ResultSaver {
         }
     }
 
-    public Optional<Integer> load() {
+    Optional<Integer> load() {
         String fileString = "";
 
         try {
@@ -41,7 +41,7 @@ public class ResultSaver {
                 BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(inputStream));
 
                 StringBuilder fileStringBuilder = new StringBuilder();
-                String readLine = "";
+                String readLine;
                 while ((readLine = bufferedReader.readLine()) != null) {
                     fileStringBuilder.append(readLine);
                 }
