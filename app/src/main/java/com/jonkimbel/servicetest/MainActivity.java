@@ -1,13 +1,18 @@
 package com.jonkimbel.servicetest;
 
+import android.content.Context;
 import android.os.Bundle;
 
-import com.google.common.collect.ImmutableList;
 import com.jonkimbel.servicetest.api.ActionCardViewModel;
 import com.jonkimbel.servicetest.api.HasState;
-import com.jonkimbel.servicetest.savetodisk.SaveToDisk;
-import com.jonkimbel.servicetest.view.ActionCardListAdapter;
+import com.jonkimbel.servicetest.approaches.SaveToDiskApproach;
+import com.jonkimbel.servicetest.approaches.SimpleCallbackApproach;
+import com.jonkimbel.servicetest.settings.ChangeActivityDeveloperSetting;
+import com.jonkimbel.servicetest.settings.TurnOnDeveloperSettings;
+import com.jonkimbel.servicetest.ui.ActionCardListAdapter;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import java.util.WeakHashMap;
 
@@ -25,6 +30,8 @@ public final class MainActivity extends AppCompatActivity {
      */
     private Map<HasState, Boolean> statefulObjects = new WeakHashMap<>();
 
+    private ActionCardListAdapter listAdapter;
+
     private boolean started;
 
     @Override
@@ -34,13 +41,15 @@ public final class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         // Create behaviors to populate the recycler view with.
-        ImmutableList.Builder<ActionCardViewModel> viewModels = new ImmutableList.Builder<>();
-        viewModels.add(SaveToDisk.newInstance(getApplicationContext(), statefulObjects, savedInstanceState));
+        List<ActionCardViewModel> viewModels = new ArrayList<>();
+        viewModels.add(SimpleCallbackApproach.newInstance(getApplicationContext(), statefulObjects, savedInstanceState));
+        viewModels.add(SaveToDiskApproach.newInstance(getApplicationContext(), statefulObjects, savedInstanceState));
 
         // Set up recycler view.
         RecyclerView recyclerView = findViewById(R.id.my_recycler_view);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
-        recyclerView.setAdapter(new ActionCardListAdapter(viewModels.build()));
+        listAdapter = new ActionCardListAdapter(viewModels);
+        recyclerView.setAdapter(listAdapter);
 
         // Improves recycler view performance, changes in content do not change the layout size.
         recyclerView.setHasFixedSize(true);
@@ -49,6 +58,23 @@ public final class MainActivity extends AppCompatActivity {
     @Override
     protected void onStart() {
         super.onStart();
+
+        if (TurnOnDeveloperSettings.shouldShow(this)) {
+            if (!listAdapter.contains(TurnOnDeveloperSettings.class)) {
+                listAdapter.addAtStart(new TurnOnDeveloperSettings(this));
+            }
+        } else {
+            listAdapter.removeAll(TurnOnDeveloperSettings.class);
+        }
+
+        if (ChangeActivityDeveloperSetting.shouldShow(this)) {
+            if (!listAdapter.contains(ChangeActivityDeveloperSetting.class)) {
+                listAdapter.addAtStart(new ChangeActivityDeveloperSetting(this));
+            }
+        } else {
+            listAdapter.removeAll(ChangeActivityDeveloperSetting.class);
+        }
+
         started = true;
         for (HasState hasState : statefulObjects.keySet()) {
             hasState.onStart();

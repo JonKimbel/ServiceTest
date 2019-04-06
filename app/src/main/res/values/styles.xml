@@ -1,8 +1,6 @@
 <resources>
 
-    <!-- Base application theme. -->
     <style name="AppTheme" parent="Theme.MaterialComponents">
-        <!-- Customize your theme here. -->
         <item name="colorPrimary">@color/colorPrimary</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="colorAccent">@color/colorSecondary</item>
@@ -16,5 +14,17 @@
     <style name="AppTheme.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar" />
 
     <style name="AppTheme.PopupOverlay" parent="ThemeOverlay.AppCompat.Light" />
+
+    <style name="ActionCardText">
+        <item name="android:textColor">@color/colorTrim</item>
+    </style>
+
+    <style name="ActionCardText.Special">
+        <item name="android:textColor">@color/colorBackground</item>
+    </style>
+
+    <style name="ActionCardText.Special.Title">
+        <item name="android:textStyle">bold</item>
+    </style>
 
 </resources>

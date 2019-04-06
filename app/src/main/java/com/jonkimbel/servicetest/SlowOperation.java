@@ -8,11 +8,6 @@ import java.util.concurrent.TimeUnit;
 
 public class SlowOperation extends Thread {
     private final static int SECONDS_TO_WAIT = 10;
-
-    public interface Listener {
-        void onFinish(int result);
-    }
-
     private final Listener callback;
 
     public SlowOperation(Listener callback) {
@@ -31,5 +26,9 @@ public class SlowOperation extends Thread {
 
         Handler handler = new Handler(Looper.getMainLooper());
         handler.post(() -> callback.onFinish(result));
+    }
+
+    public interface Listener {
+        void onFinish(int result);
     }
 }

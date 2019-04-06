@@ -1,15 +1,19 @@
 package com.jonkimbel.servicetest.api;
 
 public interface ActionCardViewModel {
-    String getTitleText();
+    int getTitleText();
 
-    String getDescriptionText();
+    int getDescriptionText();
 
-    boolean getCheckMarkViewVisibility();
+    int getButtonText();
+
+    boolean isButtonEnabled();
+
+    int getButtonIcon();
+
+    boolean isSpecialCard();
 
     void onClick();
 
     void setDataChangedCallback(Runnable callback);
-
-    boolean getWaitingIconViewVisibility();
 }

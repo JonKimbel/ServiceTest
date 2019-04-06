@@ -4,5 +4,39 @@
     <string name="placeholder">Hewwo</string>
     <string name="waitingIconContentDescription">Waiting icon</string>
     <string name="checkMarkContentDescription">Check mark</string>
-    <string name="startButtonText">Start</string>
+
+    <string name="turnOnDeveloperSettingsTitle">Turn on developer options</string>
+    <string name="turnOnDeveloperSettingsDescription">
+        To properly test the solutions in this app, you need to enable \"Don\'t keep activities\",
+        which is a system developer setting.
+        \n\nOpen \"About phone\" in Settings, then scroll down to the bottom of the page and tap
+        \"Build number\" seven times, or until developer options are enabled. Then return here.
+    </string>
+    <string name="turnOnDeveloperSettingsButtonText">Open \"About phone\"</string>
+
+    <string name="changeActivityDeveloperSettingTitle">Turn on \"Don\'t keep activities\"</string>
+    <string name="changeActivityDeveloperSettingDescription">
+        This is required to properly test the solutions presented in this app.
+        \n\nOpen \"Developer options\" and then toggle on \"Don\'t keep activities\" at the bottom
+        of the page, then return here.
+    </string>
+    <string name="changeActivityDeveloperSettingButtonText">Open \"Developer options\"</string>
+
+    <string name="startApproachButtonText">Start</string>
+    <string name="runningApproachButtonText">Running…</string>
+
+    <string name="simpleCallbackTitle">Simple callback</string>
+    <string name="simpleCallbackDescription">
+        This approach will run the callback regardless of whether the activity is running.
+        \n\nThis won\'t work if the activity is destroyed - the task won\'t have a reference to the
+        new activity.
+    </string>
+
+    <string name="saveToDiskTitle">Save to disk</string>
+    <string name="saveToDiskDescription">
+        This approach will run the callback if the activity is running, but if it\'s not running it
+        will save the result to disk so the activity can read it in onStart().
+        \n\nThis won\'t work if the activity is re-created before the task completes - the task
+        won\'t have a reference to the new activity.
+    </string>
 </resources>
