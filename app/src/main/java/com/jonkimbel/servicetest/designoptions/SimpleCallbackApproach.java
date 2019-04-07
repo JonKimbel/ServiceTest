@@ -1,4 +1,4 @@
-package com.jonkimbel.servicetest.approaches;
+package com.jonkimbel.servicetest.designoptions;
 
 import android.content.Context;
 import android.os.Bundle;
@@ -61,8 +61,12 @@ public class SimpleCallbackApproach implements ActionCardViewModel {
 
     @Override
     public void onClick() {
-        new SlowOperation(result -> {
-            actionStateController.completeAction();
+        new SlowOperation(TAG, result -> {
+            if (TAG.equals(result)) {
+                actionStateController.completeAction();
+            } else {
+                actionStateController.failAction();
+            }
             dataChangedCallback.run();
         }).start();
         actionStateController.startWaiting();

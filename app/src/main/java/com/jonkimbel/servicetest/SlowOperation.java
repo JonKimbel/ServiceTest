@@ -3,14 +3,18 @@ package com.jonkimbel.servicetest;
 import android.os.Handler;
 import android.os.Looper;
 
+import com.google.common.base.Strings;
+
 import java.util.Random;
 import java.util.concurrent.TimeUnit;
 
 public class SlowOperation extends Thread {
     private final static int SECONDS_TO_WAIT = 10;
     private final Listener callback;
+    private final String data;
 
-    public SlowOperation(Listener callback) {
+    public SlowOperation(String data, Listener callback) {
+        this.data = data;
         this.callback = callback;
     }
 
@@ -22,13 +26,12 @@ public class SlowOperation extends Thread {
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
-        int result = new Random().nextInt();
 
         Handler handler = new Handler(Looper.getMainLooper());
-        handler.post(() -> callback.onFinish(result));
+        handler.post(() -> callback.onFinish(data));
     }
 
     public interface Listener {
-        void onFinish(int result);
+        void onFinish(String result);
     }
 }

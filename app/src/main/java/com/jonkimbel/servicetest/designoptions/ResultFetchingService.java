@@ -1,4 +1,4 @@
-package com.jonkimbel.servicetest.approaches;
+package com.jonkimbel.servicetest.designoptions;
 
 import android.app.Service;
 import android.content.Intent;
@@ -11,7 +11,7 @@ import java.lang.ref.WeakReference;
 
 public class ResultFetchingService extends Service {
     private final IBinder binder = new ResultFetchingServiceBinder();
-    private Integer taskResult;
+    private String taskResult;
     private boolean running;
     private WeakReference<Runnable> callback = new WeakReference<>(() -> {});
 
@@ -29,13 +29,13 @@ public class ResultFetchingService extends Service {
         return running;
     }
 
-    public void startTask() {
+    public void startTask(String data) {
         if (running) {
             throw new IllegalStateException("Can't start task while already running");
         }
         running = true;
 
-        new SlowOperation(result -> {
+        new SlowOperation(data, result -> {
             taskResult = result;
             running = false;
             Runnable runnable = callback.get();
@@ -49,8 +49,8 @@ public class ResultFetchingService extends Service {
         this.callback = new WeakReference<>(callback);
     }
 
-    public Integer consumeResult() {
-        Integer result = taskResult;
+    public String consumeResult() {
+        String result = taskResult;
         taskResult = null;
         return result;
     }

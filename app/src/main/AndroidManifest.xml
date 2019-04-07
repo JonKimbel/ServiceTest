@@ -26,7 +26,7 @@
             </intent-filter>
         </activity>
         <service
-            android:name=".approaches.ResultFetchingService"
+            android:name=".designoptions.ResultFetchingService"
             android:label="Result fetching service"/>
     </application>
 

@@ -1,4 +1,4 @@
-package com.jonkimbel.servicetest.settings;
+package com.jonkimbel.servicetest.help;
 
 import android.content.Context;
 import android.content.Intent;
@@ -7,34 +7,33 @@ import android.provider.Settings;
 import com.jonkimbel.servicetest.R;
 import com.jonkimbel.servicetest.api.ActionCardViewModel;
 
-import static com.jonkimbel.servicetest.settings.SettingsUtil.settingEnabled;
+import static com.jonkimbel.servicetest.help.SettingsUtil.settingEnabled;
 
-public class ChangeActivityDeveloperSetting implements ActionCardViewModel {
-    private static final String EXTRA_FRAGMENT_ARG_KEY = ":settings:fragment_args_key";
+public class TurnOffDontKeepActivities implements ActionCardViewModel {
     private final Context activityContext;
 
-    public ChangeActivityDeveloperSetting(Context activityContext) {
+    public TurnOffDontKeepActivities(Context activityContext) {
         this.activityContext = activityContext;
     }
 
     public static boolean shouldShow(Context activityContext) {
         return settingEnabled(activityContext, Settings.Global.DEVELOPMENT_SETTINGS_ENABLED)
-                && !settingEnabled(activityContext, Settings.Global.ALWAYS_FINISH_ACTIVITIES);
+                && settingEnabled(activityContext, Settings.Global.ALWAYS_FINISH_ACTIVITIES);
     }
 
     @Override
     public int getTitleText() {
-        return R.string.changeActivityDeveloperSettingTitle;
+        return R.string.turnOffDontKeepActivitiesTitle;
     }
 
     @Override
     public int getDescriptionText() {
-        return R.string.changeActivityDeveloperSettingDescription;
+        return R.string.turnOffDontKeepActivitiesDescription;
     }
 
     @Override
     public int getButtonText() {
-        return R.string.changeActivityDeveloperSettingButtonText;
+        return R.string.turnOffDontKeepActivitiesButtonText;
     }
 
     @Override
@@ -44,14 +43,13 @@ public class ChangeActivityDeveloperSetting implements ActionCardViewModel {
 
     @Override
     public int getButtonIcon() {
-        return R.drawable.ic_baseline_play_circle_filled_white_48px;
+        return R.drawable.ic_baseline_settings_20px;
     }
 
     @Override
     public void onClick() {
         Intent intent = new Intent();
         intent.setAction(Settings.ACTION_APPLICATION_DEVELOPMENT_SETTINGS);
-        intent.putExtra(EXTRA_FRAGMENT_ARG_KEY, "bugreport_in_power");
         activityContext.startActivity(intent);
     }
 

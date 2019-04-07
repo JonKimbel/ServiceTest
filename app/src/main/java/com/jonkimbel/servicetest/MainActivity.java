@@ -1,15 +1,16 @@
 package com.jonkimbel.servicetest;
 
-import android.content.Context;
 import android.os.Bundle;
 
 import com.jonkimbel.servicetest.api.ActionCardViewModel;
 import com.jonkimbel.servicetest.api.HasState;
-import com.jonkimbel.servicetest.approaches.SaveToDiskApproach;
-import com.jonkimbel.servicetest.approaches.ServiceApproach;
-import com.jonkimbel.servicetest.approaches.SimpleCallbackApproach;
-import com.jonkimbel.servicetest.settings.ChangeActivityDeveloperSetting;
-import com.jonkimbel.servicetest.settings.TurnOnDeveloperSettings;
+import com.jonkimbel.servicetest.designoptions.SaveToDiskApproach;
+import com.jonkimbel.servicetest.designoptions.BoundServiceApproach;
+import com.jonkimbel.servicetest.designoptions.SimpleCallbackApproach;
+import com.jonkimbel.servicetest.help.TurnOffDontKeepActivities;
+import com.jonkimbel.servicetest.help.TurnOnDontKeepActivities;
+import com.jonkimbel.servicetest.help.TurnOnDeveloperSettings;
+import com.jonkimbel.servicetest.help.Tutorial;
 import com.jonkimbel.servicetest.ui.ActionCardListAdapter;
 
 import java.util.ArrayList;
@@ -43,9 +44,10 @@ public final class MainActivity extends AppCompatActivity {
 
         // Create behaviors to populate the recycler view with.
         List<ActionCardViewModel> viewModels = new ArrayList<>();
+        viewModels.add(new Tutorial());
         viewModels.add(SimpleCallbackApproach.newInstance(getApplicationContext(), statefulObjects, savedInstanceState));
         viewModels.add(SaveToDiskApproach.newInstance(getApplicationContext(), statefulObjects, savedInstanceState));
-        viewModels.add(ServiceApproach.newInstance(getApplicationContext(), statefulObjects, savedInstanceState));
+        viewModels.add(BoundServiceApproach.newInstance(getApplicationContext(), statefulObjects, savedInstanceState));
 
         // Set up recycler view.
         RecyclerView recyclerView = findViewById(R.id.my_recycler_view);
@@ -61,25 +63,41 @@ public final class MainActivity extends AppCompatActivity {
     protected void onStart() {
         super.onStart();
 
+        addCardsThatDependOnSettings();
+
+        started = true;
+        for (HasState hasState : statefulObjects.keySet()) {
+            hasState.onStart();
+        }
+    }
+
+    private void addCardsThatDependOnSettings() {
+        // Appears at the top of the UI, asks the user to turn on developer settings.
         if (TurnOnDeveloperSettings.shouldShow(this)) {
-            if (!listAdapter.contains(TurnOnDeveloperSettings.class)) {
+            if (listAdapter.doesNotContain(TurnOnDeveloperSettings.class)) {
                 listAdapter.addAtStart(new TurnOnDeveloperSettings(this));
             }
         } else {
             listAdapter.removeAll(TurnOnDeveloperSettings.class);
         }
 
-        if (ChangeActivityDeveloperSetting.shouldShow(this)) {
-            if (!listAdapter.contains(ChangeActivityDeveloperSetting.class)) {
-                listAdapter.addAtStart(new ChangeActivityDeveloperSetting(this));
+        // Appears at the top of the UI, asks the user to turn on "Don't keep activities"
+        if (TurnOnDontKeepActivities.shouldShow(this)) {
+            if (listAdapter.doesNotContain(TurnOnDontKeepActivities.class)) {
+                listAdapter.addAtStart(new TurnOnDontKeepActivities(this));
             }
         } else {
-            listAdapter.removeAll(ChangeActivityDeveloperSetting.class);
+            listAdapter.removeAll(TurnOnDontKeepActivities.class);
         }
 
-        started = true;
-        for (HasState hasState : statefulObjects.keySet()) {
-            hasState.onStart();
+        // Appears at the bottom of the UI, reminds the user to turn off "Don't keep activities"
+        // when they're done.
+        if (TurnOffDontKeepActivities.shouldShow(this)) {
+            if (listAdapter.doesNotContain(TurnOffDontKeepActivities.class)) {
+                listAdapter.addAtEnd(new TurnOffDontKeepActivities(this));
+            }
+        } else {
+            listAdapter.removeAll(TurnOffDontKeepActivities.class);
         }
     }
 

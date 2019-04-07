@@ -6,45 +6,69 @@
     <string name="checkMarkContentDescription">Check mark</string>
 
     <string name="turnOnDeveloperSettingsTitle">Turn on developer options</string>
-    <string name="turnOnDeveloperSettingsDescription">
-        To properly test the solutions in this app, you need to enable \"Don\'t keep activities\",
-        which is a system developer setting.
+    <string name="turnOnDeveloperSettingsDescription">To properly test the solutions in this app,
+        you need to enable \"Don\'t keep activities\", which is a system developer setting.
         \n\nOpen \"About phone\" in Settings, then scroll down to the bottom of the page and tap
         \"Build number\" seven times, or until developer options are enabled. Then return here.
     </string>
     <string name="turnOnDeveloperSettingsButtonText">Open \"About phone\"</string>
 
-    <string name="changeActivityDeveloperSettingTitle">Turn on \"Don\'t keep activities\"</string>
-    <string name="changeActivityDeveloperSettingDescription">
-        This is required to properly test the solutions presented in this app.
+    <string name="turnOnDontKeepActivitiesTitle">Turn on \"Don\'t keep activities\"</string>
+    <string name="turnOnDontKeepActivitiesDescription">This is required to properly test the
+        solutions presented in this app.
         \n\nOpen \"Developer options\" and then toggle on \"Don\'t keep activities\" at the bottom
         of the page, then return here.
     </string>
-    <string name="changeActivityDeveloperSettingButtonText">Open \"Developer options\"</string>
+    <string name="turnOnDontKeepActivitiesButtonText">Open \"Developer options\"</string>
+
+    <string name="turnOffDontKeepActivitiesTitle">Turn off \"Don\'t keep activities\"</string>
+    <string name="turnOffDontKeepActivitiesDescription">Done testing? Turn off \"Don\'t keep
+        activities\" or your phone will be a bit slower and buggier than it would be otherwise.
+        \n\nOpen \"Developer options\" and then toggle off \"Don\'t keep activities\" at the bottom
+        of the page.
+    </string>
+    <string name="turnOffDontKeepActivitiesButtonText">Open \"Developer options\"</string>
+
+    <string name="tutorialTitle">Overview</string>
+    <string name="tutorialDescription">This app presents options for doing long-running tasks in the
+        background. Each of the \"Start\" buttons in the cards below will kick off a background task
+        that will last ten seconds. If the task completes and successfully communicates the result
+        with the activity, a check mark will be displayed.
+        \n\nA few ways to test these approaches:
+        \n\n<annotation list="bullet">Wait for the task to complete without doing anything.
+        </annotation>
+        \n<annotation list="bullet">Background the app, wait for the task to complete, then return
+            to the app.</annotation>
+        \n<annotation list="bullet">Background and foreground the app, then wait for the task to
+            complete.</annotation>
+    </string>
+    <string name="tutorialButtonText">This should never be shown</string>
 
     <string name="startApproachButtonText">Start</string>
     <string name="runningApproachButtonText">Waiting…</string>
 
     <string name="simpleCallbackTitle">Simple callback</string>
-    <string name="simpleCallbackDescription">
-        This approach will run the callback regardless of whether the activity is running.
-        \n\nThis won\'t work if the activity is destroyed - the task won\'t have a reference to the
-        new activity.
+    <string name="simpleCallbackDescription">This approach will run the callback regardless of
+        whether the activity is running.
+        \n\n<annotation list="bullet">This won\'t work if the activity is ever destroyed &#8211; the
+            task won\'t be able to update state for a destroyed activity and won\'t have a reference
+            to any new activity.</annotation>
     </string>
 
     <string name="saveToDiskTitle">Save to disk</string>
-    <string name="saveToDiskDescription">
-        This approach will run the callback if the activity is running, but if it\'s not running it
-        will save the result to disk so the activity can read it in onStart().
-        \n\nThis won\'t work if the activity is re-created before the task completes - the task
-        won\'t have a reference to the new activity.
+    <string name="saveToDiskDescription">This approach will run the callback if the activity is
+        running, but if it\'s not running it will save the result to disk so the activity can read
+        it in onStart().
+        \n\n<annotation list="bullet">This will work if the activity is destroyed</annotation>
+        \n<annotation list="bullet">This won\'t work if the activity is re-created before the task
+            completes &#8211; the task won\'t have a reference to the new activity</annotation>
     </string>
 
     <string name="serviceTitle">Bound service</string>
-    <string name="serviceDescription">
-        This approach will start a service that will run the task and store the result when
-        complete. The activity will attempt to re-bind to this service when started, and if the
-        service can be bound then the data will be read from it.
-        \t\tThis will work if the activity is destroyed AND if it has already been re-created.
+    <string name="serviceDescription">This approach will start a service that will run the task and
+        store the result when complete. The activity will attempt to re-bind to this service when
+        started, and if the service can be bound then the data will be read from it.
+        \n\n<annotation list="bullet">This will work if the activity is destroyed</annotation>
+        \n<annotation list="bullet">This will work if the activity has been re-created</annotation>
     </string>
 </resources>

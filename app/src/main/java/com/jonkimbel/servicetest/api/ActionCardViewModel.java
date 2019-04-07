@@ -5,15 +5,22 @@ public interface ActionCardViewModel {
 
     int getDescriptionText();
 
+    default boolean isButtonVisible() {
+        return true;
+    }
+
     int getButtonText();
 
     boolean isButtonEnabled();
 
     int getButtonIcon();
 
-    boolean isSpecialCard();
+    default boolean isSpecialCard() {
+        return false;
+    }
 
     void onClick();
 
-    void setDataChangedCallback(Runnable callback);
+    default void setDataChangedCallback(Runnable callback) {
+    }
 }

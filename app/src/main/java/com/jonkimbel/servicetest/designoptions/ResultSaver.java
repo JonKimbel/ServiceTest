@@ -1,4 +1,4 @@
-package com.jonkimbel.servicetest.approaches;
+package com.jonkimbel.servicetest.designoptions;
 
 import android.content.Context;
 import android.util.Log;
@@ -20,18 +20,18 @@ class ResultSaver {
         this.applicationContext = applicationContext;
     }
 
-    void save(int result) {
+    void save(String result) {
         Log.d(TAG, "REKT Saving result = " + result);
         try {
             OutputStreamWriter outputStreamWriter = new OutputStreamWriter(applicationContext.openFileOutput("result", Context.MODE_PRIVATE));
-            outputStreamWriter.write(Integer.toString(result));
+            outputStreamWriter.write(result);
             outputStreamWriter.close();
         } catch (IOException e) {
             Log.e(TAG, "File write failed: " + e.toString());
         }
     }
 
-    Optional<Integer> load() {
+    String load() {
         String fileString = "";
 
         try {
@@ -50,19 +50,19 @@ class ResultSaver {
                 fileString = fileStringBuilder.toString();
             }
         } catch (FileNotFoundException e) {
-            return Optional.absent();
+            return null;
         } catch (IOException e) {
             Log.e(TAG, "Cannot read file: " + e.toString());
-            return Optional.absent();
+            return null;
         }
 
         applicationContext.deleteFile("result");
 
         try {
-            return Optional.of(Integer.parseInt(fileString));
+            return fileString;
         } catch (NumberFormatException e) {
             Log.e(TAG, "NaN: " + fileString);
-            return Optional.absent();
+            return null;
         }
     }
 }

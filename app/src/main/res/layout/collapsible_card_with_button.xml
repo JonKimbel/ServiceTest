@@ -26,6 +26,7 @@
         <TextView
             android:id="@+id/description_text"
             android:layout_marginTop="8dp"
+            android:layout_marginBottom="4dp"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="@string/placeholder"
@@ -45,7 +46,7 @@
                 android:textSize="13sp"
                 app:chipBackgroundColor="@color/colorPrimary"
                 app:chipIconTint="@color/colorBackground"
-                app:chipIcon="@drawable/ic_baseline_play_circle_filled_white_48px" />
+                app:chipIcon="@drawable/ic_baseline_play_circle_filled_24px" />
 
         </FrameLayout>
 

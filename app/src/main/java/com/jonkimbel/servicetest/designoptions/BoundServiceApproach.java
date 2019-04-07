@@ -1,4 +1,4 @@
-package com.jonkimbel.servicetest.approaches;
+package com.jonkimbel.servicetest.designoptions;
 
 import android.content.ComponentName;
 import android.content.Context;
@@ -14,8 +14,8 @@ import com.jonkimbel.servicetest.ui.ActionStateController;
 
 import java.util.Map;
 
-public class ServiceApproach implements ActionCardViewModel, ServiceConnection, HasState {
-    private final static String TAG = "ServiceApproach";
+public class BoundServiceApproach implements ActionCardViewModel, ServiceConnection, HasState {
+    private final static String TAG = "BoundServiceApproach";
 
     private final ActionStateController actionStateController;
     private final Context applicationContext;
@@ -24,15 +24,15 @@ public class ServiceApproach implements ActionCardViewModel, ServiceConnection, 
     private Runnable dataChangedCallback = () -> {
     };
 
-    private ServiceApproach(Context applicationContext, ActionStateController actionStateController) {
+    private BoundServiceApproach(Context applicationContext, ActionStateController actionStateController) {
         this.applicationContext = applicationContext;
         this.actionStateController = actionStateController;
         this.actionStateController.startWaiting();
     }
 
-    public static ServiceApproach newInstance(Context applicationContext, Map<HasState, Boolean> statefulObjects, Bundle savedInstanceState) {
+    public static BoundServiceApproach newInstance(Context applicationContext, Map<HasState, Boolean> statefulObjects, Bundle savedInstanceState) {
         ActionStateController actionStateController = new ActionStateController(TAG, savedInstanceState);
-        ServiceApproach approach = new ServiceApproach(applicationContext, actionStateController);
+        BoundServiceApproach approach = new BoundServiceApproach(applicationContext, actionStateController);
 
         statefulObjects.put(actionStateController, true);
         statefulObjects.put(approach, true);
@@ -72,7 +72,7 @@ public class ServiceApproach implements ActionCardViewModel, ServiceConnection, 
 
     @Override
     public void onClick() {
-        service.startTask();
+        service.startTask(TAG);
 
         actionStateController.startWaiting();
         dataChangedCallback.run();
@@ -87,8 +87,12 @@ public class ServiceApproach implements ActionCardViewModel, ServiceConnection, 
     public void onServiceConnected(ComponentName componentName, IBinder iBinder) {
         service = ((ResultFetchingService.ResultFetchingServiceBinder) iBinder).getService();
         service.registerCallback(() -> {
-            service.consumeResult();
-            actionStateController.completeAction();
+            String result = service.consumeResult();
+            if (TAG.equals(result)) {
+                actionStateController.completeAction();
+            } else {
+                actionStateController.failAction();
+            }
             dataChangedCallback.run();
         });
 
@@ -98,9 +102,13 @@ public class ServiceApproach implements ActionCardViewModel, ServiceConnection, 
 
         // Check for any results that might have come in while the service was running without an
         // activity.
-        Integer result = service.consumeResult();
+        String result = service.consumeResult();
         if (result != null) {
-            actionStateController.completeAction();
+            if (TAG.equals(result)) {
+                actionStateController.completeAction();
+            } else {
+                actionStateController.failAction();
+            }
         }
         dataChangedCallback.run();
     }

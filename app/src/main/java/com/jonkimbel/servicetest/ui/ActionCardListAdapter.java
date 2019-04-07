@@ -2,6 +2,7 @@ package com.jonkimbel.servicetest.ui;
 
 import android.content.res.ColorStateList;
 import android.content.res.Resources;
+import android.text.SpannableString;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -39,9 +40,12 @@ public class ActionCardListAdapter extends RecyclerView.Adapter<ActionCardListAd
 
         view.setTitleText(viewModel.getTitleText());
         view.setDescriptionText(viewModel.getDescriptionText());
-        view.setButtonText(viewModel.getButtonText());
-        view.setButtonEnabled(viewModel.isButtonEnabled());
-        view.setButtonIcon(viewModel.getButtonIcon());
+        view.setButtonVisible(viewModel.isButtonVisible());
+        if (viewModel.isButtonVisible()) {
+            view.setButtonText(viewModel.getButtonText());
+            view.setButtonEnabled(viewModel.isButtonEnabled());
+            view.setButtonIcon(viewModel.getButtonIcon());
+        }
         view.setOnClick(v -> viewModel.onClick());
         view.setIsSpecialCard(viewModel.isSpecialCard());
 
@@ -53,13 +57,13 @@ public class ActionCardListAdapter extends RecyclerView.Adapter<ActionCardListAd
         return viewModels.size();
     }
 
-    public boolean contains(Class<? extends ActionCardViewModel> clazz) {
+    public boolean doesNotContain(Class<? extends ActionCardViewModel> clazz) {
         for (ActionCardViewModel viewModel : viewModels) {
             if (viewModel.getClass() == clazz) {
-                return true;
+                return false;
             }
         }
-        return false;
+        return true;
     }
 
     public void removeAll(Class<? extends ActionCardViewModel> clazz) {
@@ -74,6 +78,11 @@ public class ActionCardListAdapter extends RecyclerView.Adapter<ActionCardListAd
     public void addAtStart(ActionCardViewModel viewModel) {
         viewModels.add(0, viewModel);
         notifyItemInserted(0);
+    }
+
+    public void addAtEnd(ActionCardViewModel viewModel) {
+        viewModels.add(viewModel);
+        notifyItemInserted(viewModels.size() - 1);
     }
 
     static class ActionCardViewHolder extends RecyclerView.ViewHolder {
@@ -96,15 +105,19 @@ public class ActionCardListAdapter extends RecyclerView.Adapter<ActionCardListAd
         }
 
         void setTitleText(int textId) {
-            titleView.setText(textId);
+            titleView.setText(Formatter.formatString(titleView.getResources(), textId));
         }
 
         void setDescriptionText(int textId) {
-            descriptionView.setText(textId);
+            descriptionView.setText(Formatter.formatString(descriptionView.getResources(), textId));
+        }
+
+        void setButtonVisible(boolean buttonVisible) {
+            buttonView.setVisibility(buttonVisible ? View.VISIBLE : View.GONE);
         }
 
         void setButtonText(int textId) {
-            buttonView.setText(textId);
+            buttonView.setText(Formatter.formatString(buttonView.getResources(), textId));
         }
 
         void setButtonEnabled(boolean buttonEnabled) {

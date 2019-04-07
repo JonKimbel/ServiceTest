@@ -1,4 +1,4 @@
-package com.jonkimbel.servicetest.settings;
+package com.jonkimbel.servicetest.help;
 
 import android.content.Context;
 import android.provider.Settings;

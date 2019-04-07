@@ -1,4 +1,4 @@
-package com.jonkimbel.servicetest.approaches;
+package com.jonkimbel.servicetest.designoptions;
 
 import android.content.Context;
 import android.os.Bundle;
@@ -62,7 +62,7 @@ public class SaveToDiskApproach implements ActionCardViewModel, HasState {
 
     @Override
     public void onClick() {
-        new SlowOperation(result -> {
+        new SlowOperation(TAG, result -> {
             if (activityStarted) {
                 processResult(result);
             } else {
@@ -86,9 +86,9 @@ public class SaveToDiskApproach implements ActionCardViewModel, HasState {
     @Override
     public void onStart() {
         activityStarted = true;
-        Optional<Integer> result = resultSaver.load();
-        if (result.isPresent()) {
-            processResult(result.get());
+        String result = resultSaver.load();
+        if (result != null) {
+            processResult(result);
         }
     }
 
@@ -101,8 +101,12 @@ public class SaveToDiskApproach implements ActionCardViewModel, HasState {
         activityStarted = false;
     }
 
-    private void processResult(int result) {
-        actionStateController.completeAction();
+    private void processResult(String result) {
+        if (TAG.equals(result)) {
+            actionStateController.completeAction();
+        } else {
+            actionStateController.failAction();
+        }
         dataChangedCallback.run();
     }
 }

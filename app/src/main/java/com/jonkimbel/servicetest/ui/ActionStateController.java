@@ -12,6 +12,7 @@ public class ActionStateController implements HasState {
     // Persisted after the Activity stops.
     private boolean actionCompleted;
     private boolean actionRunning;
+    private boolean actionFailed;
 
     public ActionStateController(String classTag, Bundle savedInstanceState) {
         actionCompletedKey = classTag + "actionCompleted";
@@ -24,6 +25,7 @@ public class ActionStateController implements HasState {
 
     public void startWaiting() {
         actionRunning = true;
+        actionFailed = false;
     }
 
     public void stopWaiting() {
@@ -35,6 +37,11 @@ public class ActionStateController implements HasState {
         actionCompleted = true;
     }
 
+    public void failAction() {
+        actionRunning = false;
+        actionFailed = true;
+    }
+
     public boolean canStartNewAction() {
         return !actionRunning;
     }
@@ -42,10 +49,12 @@ public class ActionStateController implements HasState {
     public int getIcon() {
         if (actionRunning) {
             return R.drawable.ic_baseline_timer_24px;
+        } else if (actionFailed) {
+            return R.drawable.ic_baseline_cancel_24px;
         } else if (actionCompleted) {
             return R.drawable.ic_baseline_check_circle_24px;
         } else {
-            return R.drawable.ic_baseline_play_circle_filled_white_48px;
+            return R.drawable.ic_baseline_play_circle_filled_24px;
         }
     }
 

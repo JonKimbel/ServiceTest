@@ -1,4 +1,4 @@
-package com.jonkimbel.servicetest.settings;
+package com.jonkimbel.servicetest.help;
 
 import android.content.Context;
 import android.content.Intent;
@@ -7,7 +7,7 @@ import android.provider.Settings;
 import com.jonkimbel.servicetest.R;
 import com.jonkimbel.servicetest.api.ActionCardViewModel;
 
-import static com.jonkimbel.servicetest.settings.SettingsUtil.settingEnabled;
+import static com.jonkimbel.servicetest.help.SettingsUtil.settingEnabled;
 
 public class TurnOnDeveloperSettings implements ActionCardViewModel {
     private final Context activityContext;
@@ -42,7 +42,7 @@ public class TurnOnDeveloperSettings implements ActionCardViewModel {
 
     @Override
     public int getButtonIcon() {
-        return R.drawable.ic_baseline_play_circle_filled_white_48px;
+        return R.drawable.ic_baseline_settings_20px;
     }
 
     @Override
@@ -50,11 +50,6 @@ public class TurnOnDeveloperSettings implements ActionCardViewModel {
         Intent intent = new Intent();
         intent.setAction(Settings.ACTION_DEVICE_INFO_SETTINGS);
         activityContext.startActivity(intent);
-    }
-
-    @Override
-    public void setDataChangedCallback(Runnable callback) {
-
     }
 
     @Override
