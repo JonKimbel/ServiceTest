@@ -37,7 +37,7 @@ class Formatter {
         return spannableString;
     }
 
-    private static int dpToPx(Resources res, int dpValue) {
+    private static int dpToPx(Resources res, @SuppressWarnings("SameParameterValue") int dpValue) {
         return (int) (dpValue * res.getDisplayMetrics().density + 0.5f);
     }
 }

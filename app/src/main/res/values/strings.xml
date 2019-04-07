@@ -1,9 +1,6 @@
 <resources>
     <string name="app_name">ServiceTest</string>
-    <string name="action_settings">Settings</string>
     <string name="placeholder">Hewwo</string>
-    <string name="waitingIconContentDescription">Waiting icon</string>
-    <string name="checkMarkContentDescription">Check mark</string>
 
     <string name="turnOnDeveloperSettingsTitle">Turn on developer options</string>
     <string name="turnOnDeveloperSettingsDescription">To properly test the solutions in this app,
@@ -45,7 +42,7 @@
     <string name="tutorialButtonText">This should never be shown</string>
 
     <string name="startApproachButtonText">Start</string>
-    <string name="runningApproachButtonText">Waiting…</string>
+    <string name="waitingApproachButtonText">Waiting…</string>
 
     <string name="simpleCallbackTitle">Simple callback</string>
     <string name="simpleCallbackDescription">This approach will run the callback regardless of
@@ -71,4 +68,5 @@
         \n\n<annotation list="bullet">This will work if the activity is destroyed</annotation>
         \n<annotation list="bullet">This will work if the activity has been re-created</annotation>
     </string>
+    <string name="serviceNotBoundButtonText">Binding…</string>
 </resources>

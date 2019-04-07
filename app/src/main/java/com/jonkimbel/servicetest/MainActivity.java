@@ -4,12 +4,12 @@ import android.os.Bundle;
 
 import com.jonkimbel.servicetest.api.ActionCardViewModel;
 import com.jonkimbel.servicetest.api.HasState;
-import com.jonkimbel.servicetest.designoptions.SaveToDiskApproach;
 import com.jonkimbel.servicetest.designoptions.BoundServiceApproach;
+import com.jonkimbel.servicetest.designoptions.SaveToDiskApproach;
 import com.jonkimbel.servicetest.designoptions.SimpleCallbackApproach;
 import com.jonkimbel.servicetest.help.TurnOffDontKeepActivities;
-import com.jonkimbel.servicetest.help.TurnOnDontKeepActivities;
 import com.jonkimbel.servicetest.help.TurnOnDeveloperSettings;
+import com.jonkimbel.servicetest.help.TurnOnDontKeepActivities;
 import com.jonkimbel.servicetest.help.Tutorial;
 import com.jonkimbel.servicetest.ui.ActionCardListAdapter;
 
@@ -24,17 +24,13 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 public final class MainActivity extends AppCompatActivity {
-    private final static String TAG = "MainActivity";
-
     /**
      * Keeps track of objects that need to save their state when the activity dies. The values are
      * not used, we only use a WeakHashMap for its weak properties.
      */
-    private Map<HasState, Boolean> statefulObjects = new WeakHashMap<>();
+    private final Map<HasState, Boolean> statefulObjects = new WeakHashMap<>();
 
     private ActionCardListAdapter listAdapter;
-
-    private boolean started;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -45,7 +41,7 @@ public final class MainActivity extends AppCompatActivity {
         // Create behaviors to populate the recycler view with.
         List<ActionCardViewModel> viewModels = new ArrayList<>();
         viewModels.add(new Tutorial());
-        viewModels.add(SimpleCallbackApproach.newInstance(getApplicationContext(), statefulObjects, savedInstanceState));
+        viewModels.add(SimpleCallbackApproach.newInstance(statefulObjects, savedInstanceState));
         viewModels.add(SaveToDiskApproach.newInstance(getApplicationContext(), statefulObjects, savedInstanceState));
         viewModels.add(BoundServiceApproach.newInstance(getApplicationContext(), statefulObjects, savedInstanceState));
 
@@ -65,7 +61,6 @@ public final class MainActivity extends AppCompatActivity {
 
         addCardsThatDependOnSettings();
 
-        started = true;
         for (HasState hasState : statefulObjects.keySet()) {
             hasState.onStart();
         }
@@ -103,7 +98,6 @@ public final class MainActivity extends AppCompatActivity {
 
     @Override
     protected void onStop() {
-        started = false;
         for (HasState hasState : statefulObjects.keySet()) {
             hasState.onStop();
         }

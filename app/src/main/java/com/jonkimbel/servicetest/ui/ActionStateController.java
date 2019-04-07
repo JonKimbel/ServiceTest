@@ -28,10 +28,6 @@ public class ActionStateController implements HasState {
         actionFailed = false;
     }
 
-    public void stopWaiting() {
-        actionRunning = false;
-    }
-
     public void completeAction() {
         actionRunning = false;
         actionCompleted = true;
@@ -60,7 +56,7 @@ public class ActionStateController implements HasState {
 
     public int getText() {
         if (actionRunning) {
-            return R.string.runningApproachButtonText;
+            return R.string.waitingApproachButtonText;
         } else {
             return R.string.startApproachButtonText;
         }

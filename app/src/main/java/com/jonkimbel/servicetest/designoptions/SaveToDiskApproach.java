@@ -3,7 +3,6 @@ package com.jonkimbel.servicetest.designoptions;
 import android.content.Context;
 import android.os.Bundle;
 
-import com.google.common.base.Optional;
 import com.jonkimbel.servicetest.R;
 import com.jonkimbel.servicetest.SlowOperation;
 import com.jonkimbel.servicetest.api.ActionCardViewModel;
@@ -17,7 +16,7 @@ public class SaveToDiskApproach implements ActionCardViewModel, HasState {
 
     private final ActionStateController actionStateController;
 
-    private ResultSaver resultSaver;
+    private final ResultSaver resultSaver;
     private Runnable dataChangedCallback = () -> {
     };
     private boolean activityStarted;

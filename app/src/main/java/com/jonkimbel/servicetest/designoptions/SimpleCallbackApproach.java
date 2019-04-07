@@ -1,6 +1,5 @@
 package com.jonkimbel.servicetest.designoptions;
 
-import android.content.Context;
 import android.os.Bundle;
 
 import com.jonkimbel.servicetest.R;
@@ -19,14 +18,14 @@ public class SimpleCallbackApproach implements ActionCardViewModel {
     private Runnable dataChangedCallback = () -> {
     };
 
-    private SimpleCallbackApproach(Context context, ActionStateController actionStateController) {
+    private SimpleCallbackApproach(ActionStateController actionStateController) {
         this.actionStateController = actionStateController;
     }
 
-    public static SimpleCallbackApproach newInstance(Context context, Map<HasState, Boolean> statefulObjects, Bundle savedInstanceState) {
+    public static SimpleCallbackApproach newInstance(Map<HasState, Boolean> statefulObjects, Bundle savedInstanceState) {
         ActionStateController actionStateController = new ActionStateController(TAG, savedInstanceState);
         statefulObjects.put(actionStateController, true);
-        return new SimpleCallbackApproach(context, actionStateController);
+        return new SimpleCallbackApproach(actionStateController);
     }
 
     @Override

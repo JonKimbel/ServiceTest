@@ -3,9 +3,6 @@ package com.jonkimbel.servicetest;
 import android.os.Handler;
 import android.os.Looper;
 
-import com.google.common.base.Strings;
-
-import java.util.Random;
 import java.util.concurrent.TimeUnit;
 
 public class SlowOperation extends Thread {

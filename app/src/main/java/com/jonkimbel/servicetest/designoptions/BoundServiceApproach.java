@@ -10,31 +10,30 @@ import android.os.IBinder;
 import com.jonkimbel.servicetest.R;
 import com.jonkimbel.servicetest.api.ActionCardViewModel;
 import com.jonkimbel.servicetest.api.HasState;
-import com.jonkimbel.servicetest.ui.ActionStateController;
 
 import java.util.Map;
 
 public class BoundServiceApproach implements ActionCardViewModel, ServiceConnection, HasState {
     private final static String TAG = "BoundServiceApproach";
+    private final static String LAST_RUN_RESULT_KEY = TAG + "lastRunResult";
 
-    private final ActionStateController actionStateController;
     private final Context applicationContext;
 
     private ResultFetchingService service;
     private Runnable dataChangedCallback = () -> {
     };
+    private boolean activityStarted;
+    private LastRunResult lastRunResult = LastRunResult.NEVER_RUN;
 
-    private BoundServiceApproach(Context applicationContext, ActionStateController actionStateController) {
+    private BoundServiceApproach(Context applicationContext, Bundle savedInstanceState) {
         this.applicationContext = applicationContext;
-        this.actionStateController = actionStateController;
-        this.actionStateController.startWaiting();
+        if (savedInstanceState != null) {
+            lastRunResult = LastRunResult.values()[savedInstanceState.getInt(LAST_RUN_RESULT_KEY, LastRunResult.NEVER_RUN.ordinal())];
+        }
     }
 
     public static BoundServiceApproach newInstance(Context applicationContext, Map<HasState, Boolean> statefulObjects, Bundle savedInstanceState) {
-        ActionStateController actionStateController = new ActionStateController(TAG, savedInstanceState);
-        BoundServiceApproach approach = new BoundServiceApproach(applicationContext, actionStateController);
-
-        statefulObjects.put(actionStateController, true);
+        BoundServiceApproach approach = new BoundServiceApproach(applicationContext, savedInstanceState);
         statefulObjects.put(approach, true);
 
         return approach;
@@ -52,17 +51,35 @@ public class BoundServiceApproach implements ActionCardViewModel, ServiceConnect
 
     @Override
     public int getButtonText() {
-        return actionStateController.getText();
+        if (service == null) {
+            return R.string.serviceNotBoundButtonText;
+        } else if (service.running()) {
+            return R.string.waitingApproachButtonText;
+        } else {
+            return R.string.startApproachButtonText;
+        }
     }
 
     @Override
     public boolean isButtonEnabled() {
-        return actionStateController.canStartNewAction();
+        return service != null && !service.running();
     }
 
     @Override
     public int getButtonIcon() {
-        return actionStateController.getIcon();
+        if (service == null || service.running()) {
+            return R.drawable.ic_baseline_timer_24px;
+        }
+
+        switch (lastRunResult) {
+            case FAILED:
+                return R.drawable.ic_baseline_cancel_24px;
+            case COMPLETED:
+                return R.drawable.ic_baseline_check_circle_24px;
+            case NEVER_RUN:
+                return R.drawable.ic_baseline_play_circle_filled_24px;
+        }
+        throw new RuntimeException("LastRunResult enum changed after compilation");
     }
 
     @Override
@@ -73,8 +90,6 @@ public class BoundServiceApproach implements ActionCardViewModel, ServiceConnect
     @Override
     public void onClick() {
         service.startTask(TAG);
-
-        actionStateController.startWaiting();
         dataChangedCallback.run();
     }
 
@@ -87,36 +102,36 @@ public class BoundServiceApproach implements ActionCardViewModel, ServiceConnect
     public void onServiceConnected(ComponentName componentName, IBinder iBinder) {
         service = ((ResultFetchingService.ResultFetchingServiceBinder) iBinder).getService();
         service.registerCallback(() -> {
-            String result = service.consumeResult();
-            if (TAG.equals(result)) {
-                actionStateController.completeAction();
-            } else {
-                actionStateController.failAction();
+            if (!activityStarted) {
+                return;
             }
-            dataChangedCallback.run();
+            if (applyNewResult()) {
+                dataChangedCallback.run();
+            }
         });
 
-        if (!service.running()) {
-            actionStateController.stopWaiting();
-        }
+        // Check for any results that might have come in while the service was unbound. We don't
+        // care what it returns, since we always need to update the UI when the service is re-bound.
+        applyNewResult();
+        dataChangedCallback.run();
+    }
 
-        // Check for any results that might have come in while the service was running without an
-        // activity.
+    /**
+     * Checks to see if the service has a new result. If it does, the result will be consumed and
+     * applied to {@link #lastRunResult} and this method will return true.
+     */
+    private boolean applyNewResult() {
         String result = service.consumeResult();
         if (result != null) {
-            if (TAG.equals(result)) {
-                actionStateController.completeAction();
-            } else {
-                actionStateController.failAction();
-            }
+            lastRunResult = TAG.equals(result) ? LastRunResult.COMPLETED : LastRunResult.FAILED;
+            return true;
         }
-        dataChangedCallback.run();
+        return false;
     }
 
     @Override
     public void onServiceDisconnected(ComponentName componentName) {
         service = null;
-        actionStateController.startWaiting();
         dataChangedCallback.run();
     }
 
@@ -125,15 +140,23 @@ public class BoundServiceApproach implements ActionCardViewModel, ServiceConnect
         Intent serviceIntent = new Intent(applicationContext, ResultFetchingService.class);
         applicationContext.startService(serviceIntent);
         applicationContext.bindService(serviceIntent, this, 0);
+        activityStarted = true;
     }
 
     @Override
     public void onSaveInstanceState(Bundle bundle) {
-
+        bundle.putInt(LAST_RUN_RESULT_KEY, lastRunResult.ordinal());
     }
 
     @Override
     public void onStop() {
+        activityStarted = false;
         applicationContext.unbindService(this);
+    }
+
+    private enum LastRunResult {
+        NEVER_RUN,
+        COMPLETED,
+        FAILED,
     }
 }

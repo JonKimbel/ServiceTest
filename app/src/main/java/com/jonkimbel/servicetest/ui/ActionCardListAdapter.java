@@ -2,7 +2,6 @@ package com.jonkimbel.servicetest.ui;
 
 import android.content.res.ColorStateList;
 import android.content.res.Resources;
-import android.text.SpannableString;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -20,7 +19,7 @@ import androidx.core.widget.TextViewCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
 public class ActionCardListAdapter extends RecyclerView.Adapter<ActionCardListAdapter.ActionCardViewHolder> {
-    private List<ActionCardViewModel> viewModels;
+    private final List<ActionCardViewModel> viewModels;
 
     public ActionCardListAdapter(List<ActionCardViewModel> viewModels) {
         this.viewModels = viewModels;
@@ -151,6 +150,8 @@ public class ActionCardListAdapter extends RecyclerView.Adapter<ActionCardListAd
 
         private void setColors(ColorStateList foregroundColor, ColorStateList backgroundColor) {
             buttonView.setChipBackgroundColor(foregroundColor);
+            buttonView.setRippleColor(foregroundColor);
+            cardView.setRippleColor(foregroundColor);
 
             buttonView.setTextColor(backgroundColor);
             buttonView.setChipIconTint(backgroundColor);

@@ -3,8 +3,6 @@ package com.jonkimbel.servicetest.designoptions;
 import android.content.Context;
 import android.util.Log;
 
-import com.google.common.base.Optional;
-
 import java.io.BufferedReader;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -21,7 +19,6 @@ class ResultSaver {
     }
 
     void save(String result) {
-        Log.d(TAG, "REKT Saving result = " + result);
         try {
             OutputStreamWriter outputStreamWriter = new OutputStreamWriter(applicationContext.openFileOutput("result", Context.MODE_PRIVATE));
             outputStreamWriter.write(result);
@@ -58,11 +55,6 @@ class ResultSaver {
 
         applicationContext.deleteFile("result");
 
-        try {
-            return fileString;
-        } catch (NumberFormatException e) {
-            Log.e(TAG, "NaN: " + fileString);
-            return null;
-        }
+        return fileString;
     }
 }
