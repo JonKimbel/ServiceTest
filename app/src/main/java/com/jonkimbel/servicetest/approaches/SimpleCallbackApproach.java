@@ -46,7 +46,7 @@ public class SimpleCallbackApproach implements ActionCardViewModel {
 
     @Override
     public boolean isButtonEnabled() {
-        return !actionStateController.isActionRunning();
+        return actionStateController.canStartNewAction();
     }
 
     @Override
@@ -65,7 +65,7 @@ public class SimpleCallbackApproach implements ActionCardViewModel {
             actionStateController.completeAction();
             dataChangedCallback.run();
         }).start();
-        actionStateController.startAction();
+        actionStateController.startWaiting();
         dataChangedCallback.run();
     }
 

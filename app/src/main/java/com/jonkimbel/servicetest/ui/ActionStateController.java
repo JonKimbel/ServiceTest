@@ -22,9 +22,12 @@ public class ActionStateController implements HasState {
         }
     }
 
-    public void startAction() {
+    public void startWaiting() {
         actionRunning = true;
-        actionCompleted = false;
+    }
+
+    public void stopWaiting() {
+        actionRunning = false;
     }
 
     public void completeAction() {
@@ -32,18 +35,14 @@ public class ActionStateController implements HasState {
         actionCompleted = true;
     }
 
-    public boolean isActionComplete() {
-        return actionCompleted;
-    }
-
-    public boolean isActionRunning() {
-        return actionRunning;
+    public boolean canStartNewAction() {
+        return !actionRunning;
     }
 
     public int getIcon() {
-        if (isActionRunning()) {
+        if (actionRunning) {
             return R.drawable.ic_baseline_timer_24px;
-        } else if (isActionComplete()) {
+        } else if (actionCompleted) {
             return R.drawable.ic_baseline_check_circle_24px;
         } else {
             return R.drawable.ic_baseline_play_circle_filled_white_48px;
@@ -51,7 +50,7 @@ public class ActionStateController implements HasState {
     }
 
     public int getText() {
-        if (isActionRunning()) {
+        if (actionRunning) {
             return R.string.runningApproachButtonText;
         } else {
             return R.string.startApproachButtonText;

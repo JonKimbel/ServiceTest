@@ -52,7 +52,7 @@ public class SaveToDiskApproach implements ActionCardViewModel, HasState {
 
     @Override
     public boolean isButtonEnabled() {
-        return !actionStateController.isActionRunning();
+        return actionStateController.canStartNewAction();
     }
 
     @Override
@@ -69,7 +69,7 @@ public class SaveToDiskApproach implements ActionCardViewModel, HasState {
                 resultSaver.save(result);
             }
         }).start();
-        actionStateController.startAction();
+        actionStateController.startWaiting();
         dataChangedCallback.run();
     }
 

@@ -23,7 +23,7 @@
     <string name="changeActivityDeveloperSettingButtonText">Open \"Developer options\"</string>
 
     <string name="startApproachButtonText">Start</string>
-    <string name="runningApproachButtonText">Running…</string>
+    <string name="runningApproachButtonText">Waiting…</string>
 
     <string name="simpleCallbackTitle">Simple callback</string>
     <string name="simpleCallbackDescription">
@@ -38,5 +38,13 @@
         will save the result to disk so the activity can read it in onStart().
         \n\nThis won\'t work if the activity is re-created before the task completes - the task
         won\'t have a reference to the new activity.
+    </string>
+
+    <string name="serviceTitle">Bound service</string>
+    <string name="serviceDescription">
+        This approach will start a service that will run the task and store the result when
+        complete. The activity will attempt to re-bind to this service when started, and if the
+        service can be bound then the data will be read from it.
+        \t\tThis will work if the activity is destroyed AND if it has already been re-created.
     </string>
 </resources>

@@ -6,6 +6,7 @@ import android.os.Bundle;
 import com.jonkimbel.servicetest.api.ActionCardViewModel;
 import com.jonkimbel.servicetest.api.HasState;
 import com.jonkimbel.servicetest.approaches.SaveToDiskApproach;
+import com.jonkimbel.servicetest.approaches.ServiceApproach;
 import com.jonkimbel.servicetest.approaches.SimpleCallbackApproach;
 import com.jonkimbel.servicetest.settings.ChangeActivityDeveloperSetting;
 import com.jonkimbel.servicetest.settings.TurnOnDeveloperSettings;
@@ -44,6 +45,7 @@ public final class MainActivity extends AppCompatActivity {
         List<ActionCardViewModel> viewModels = new ArrayList<>();
         viewModels.add(SimpleCallbackApproach.newInstance(getApplicationContext(), statefulObjects, savedInstanceState));
         viewModels.add(SaveToDiskApproach.newInstance(getApplicationContext(), statefulObjects, savedInstanceState));
+        viewModels.add(ServiceApproach.newInstance(getApplicationContext(), statefulObjects, savedInstanceState));
 
         // Set up recycler view.
         RecyclerView recyclerView = findViewById(R.id.my_recycler_view);
