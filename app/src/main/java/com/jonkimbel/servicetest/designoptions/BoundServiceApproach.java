@@ -6,7 +6,6 @@ import android.content.Intent;
 import android.content.ServiceConnection;
 import android.os.Bundle;
 import android.os.IBinder;
-import android.util.Log;
 
 import com.jonkimbel.servicetest.R;
 import com.jonkimbel.servicetest.api.ActionCardViewModel;
@@ -90,7 +89,9 @@ public class BoundServiceApproach implements ActionCardViewModel, ServiceConnect
 
     @Override
     public void onClick() {
-        service.startTask(TAG);
+        if (service != null && !service.running()) {
+            service.startTask(TAG);
+        }
         dataChangedCallback.run();
     }
 
@@ -101,10 +102,8 @@ public class BoundServiceApproach implements ActionCardViewModel, ServiceConnect
 
     @Override
     public void onServiceConnected(ComponentName componentName, IBinder iBinder) {
-        Log.e(TAG, "REKT onServiceConnected");
         service = ((ResultFetchingService.ResultFetchingServiceBinder) iBinder).getService();
         service.registerCallback(() -> {
-            Log.e(TAG, "REKT service callback lambda");
             if (!activityStarted) {
                 return;
             }
@@ -125,7 +124,6 @@ public class BoundServiceApproach implements ActionCardViewModel, ServiceConnect
      */
     private boolean applyNewResult() {
         String result = service.consumeResult();
-        Log.e(TAG, String.format("REKT applyNewResult, %s new result", result == null ? "did not get" : "got"));
         if (result != null) {
             lastRunResult = TAG.equals(result) ? LastRunResult.COMPLETED : LastRunResult.FAILED;
             return true;
@@ -141,7 +139,6 @@ public class BoundServiceApproach implements ActionCardViewModel, ServiceConnect
 
     @Override
     public void onStart() {
-        Log.e(TAG, "REKT onStart");
         Intent serviceIntent = new Intent(applicationContext, ResultFetchingService.class);
         applicationContext.startService(serviceIntent);
         applicationContext.bindService(serviceIntent, this, 0);
@@ -155,7 +152,6 @@ public class BoundServiceApproach implements ActionCardViewModel, ServiceConnect
 
     @Override
     public void onStop() {
-        Log.e(TAG, "REKT onStop");
         activityStarted = false;
         applicationContext.unbindService(this);
     }

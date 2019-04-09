@@ -6,7 +6,7 @@ import android.os.Looper;
 import java.util.concurrent.TimeUnit;
 
 public class SlowOperation extends Thread {
-    private final static int SECONDS_TO_WAIT = 10;
+    private final static int SECONDS_TO_WAIT = 1;
     private final Listener callback;
     private final String data;
 
