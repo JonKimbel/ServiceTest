@@ -29,7 +29,7 @@
     <string name="tutorialTitle">Overview</string>
     <string name="tutorialDescription">This app presents options for doing long-running tasks in the
         background. Each of the \"Start\" buttons in the cards below will kick off a background task
-        that will last ten seconds. If the task completes and successfully communicates the result
+        that will last four seconds. If the task completes and successfully communicates the result
         with the activity, a check mark will be displayed.
         \n\nA few ways to test these approaches:
         \n\n<annotation list="bullet">Wait for the task to complete without doing anything.

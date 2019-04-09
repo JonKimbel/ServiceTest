@@ -12,8 +12,6 @@ import java.lang.ref.WeakReference;
 import androidx.annotation.GuardedBy;
 
 public class ResultFetchingService extends Service {
-    private final static String TAG = "ResultFetchingService";
-
     private final IBinder binder = new ResultFetchingServiceBinder();
     private final Object taskResultMutex = new Object();
     private final Object runningMutex = new Object();
